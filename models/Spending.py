@@ -8,14 +8,13 @@ class Spending(db.Base):
     amount = Column('amount', Float, nullable=False)
     when = Column('when', DateTime, server_default=func.now(),
     nullable=True)
-    accounts_id = Column('accounts_id', String(15), ForeignKey('accounts.id',
+    accounts_id = Column('accounts_id', String(15), ForeignKey('accounts.id',onupdate='CASCADE', ondelete='CASCADE'), nullable=False)
 
-onupdate='CASCADE', ondelete='CASCADE'), nullable=False)
-accounts = relationship("Account", back_populates="spendings")
-def __init__(self, amount, when, accounts_id): 
-    self.amount = amount
-    self.when = when
-    self.accounts_id = accounts_id
-    
-def __repr__(self):
-    return f"<Spending {self.id}>"
+    accounts = relationship("Account", back_populates="spendings")
+    def __init__(self, amount, when, accounts_id): 
+        self.amount = amount
+        self.when = when
+        self.accounts_id = accounts_id
+        
+    def __repr__(self):
+        return f"<Spending {self.id}>"
