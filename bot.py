@@ -149,6 +149,9 @@ def on_remove_record(message):
         bot.reply_to(message, f"Registro removido: {record_type}, {index}")
     else:
         bot.reply_to(message, f"No se pudo remover el registro: {index}")
+
+
+        
 #########################################################
 @bot.message_handler(func=lambda message: True) 
 def on_fallback(message):

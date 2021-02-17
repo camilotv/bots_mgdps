@@ -31,7 +31,7 @@ def get_help_message ():
 def get_welcome_message(bot_data): 
     response = (
         f"Hola, soy *{bot_data.first_name}* "
-        f"también conocido como *{bot_data.username}*.\n\n" "¡Estoy aquí para ayudarte a registrar tus gastos!" )
+        f"también conocido como el care chiris:*{bot_data.username}*.\n\n" "¡Estoy aquí para ayudarte a ganar la materia!" )
     return response
 
 def register_account(user_id):
