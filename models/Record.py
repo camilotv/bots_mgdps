@@ -14,7 +14,6 @@ class Record(db.Base):
     category = Column('category', String(255), nullable=False) 
     message = Column('message', String(255), nullable=False) 
     patients_id = Column('patients_id', String(15), ForeignKey('patients.id', onupdate='CASCADE', ondelete='CASCADE'), nullable=False)
-    patients = relationship("Patient", back_populates="records")
 
     def __init__(self, id, systolic, diastolic, frecuency, weight, date, category, message, patients_id): 
         self.id = id

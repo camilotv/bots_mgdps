@@ -17,4 +17,4 @@ class Doctor(db.Base):
         self.code = code
 
     def __repr__(self):
-        return f"<Doctor {self.id}>"
+        return f"{self.id}/{self.name}/{self.lastname}/{self.code}"

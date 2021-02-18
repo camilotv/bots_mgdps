@@ -10,7 +10,6 @@ class Patient(db.Base):
     lastname = Column('lastname', String(20), nullable=False) 
     code = Column('lastname', String(20), nullable=False)
     doctors_id = Column('doctors_id', String(15), ForeignKey('doctors.id', onupdate='CASCADE', ondelete='CASCADE'), nullable=False)
-    doctors = relationship("Doctor", back_populates="patients")
 
     def __init__(self, id, name, lastname, code, doctors_id): 
         self.id = id

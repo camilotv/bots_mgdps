@@ -151,6 +151,33 @@ def on_remove_record(message):
         bot.reply_to(message, f"No se pudo remover el registro: {index}")
 
 
+###############################################################
+###############################################################
+###############################################################
+
+##################OBTENER PACIENTES################################
+@bot.message_handler(commands=["obtener_pacientes"]) 
+def on_command_obtener_pacientes(message):
+    bot.send_chat_action(message.chat.id, 'typing')
+    text = logic.get_all_patients(message.from_user.id)
+    bot.reply_to(message, text)
+
+##################OBTENER MEDICOS################################
+@bot.message_handler(commands=["obtener_medicos"]) 
+def on_command_obtener_medicos(message):
+    bot.send_chat_action(message.chat.id, 'typing')
+    text = logic.get_all_doctors(message.from_user.id)
+    bot.reply_to(message, text)
+
+
+##################CREAR MEDICOS################################
+@bot.message_handler(commands=["crear_medico"]) 
+def on_command_crear_medico(message):
+    bot.send_chat_action(message.chat.id, 'typing')
+    text = logic.register_doctor(5,"asd","dsa", "100")
+    print("text: " + str(text))
+    print("message: " + (str(message)))
+    bot.reply_to(message, text)
         
 #########################################################
 @bot.message_handler(func=lambda message: True) 
