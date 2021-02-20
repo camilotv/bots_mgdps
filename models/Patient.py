@@ -8,7 +8,7 @@ class Patient(db.Base):
     id = Column('id', Integer, primary_key=True, nullable=False) 
     name = Column('name', String(20), nullable=False) 
     lastname = Column('lastname', String(20), nullable=False) 
-    code = Column('lastname', String(20), nullable=False)
+    code = Column('code', String(20), nullable=False)
     doctors_id = Column('doctors_id', String(15), ForeignKey('doctors.id', onupdate='CASCADE', ondelete='CASCADE'), nullable=False)
 
     def __init__(self, id, name, lastname, code, doctors_id): 
@@ -19,4 +19,4 @@ class Patient(db.Base):
         self.doctors_id = doctors_id
 
     def __repr__(self):
-        return f"<Patient {self.id}>"
+        return f"{self.id}/{self.name}/{self.lastname}/{self.code}"

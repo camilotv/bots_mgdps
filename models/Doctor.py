@@ -8,7 +8,7 @@ class Doctor(db.Base):
     id = Column('id', Integer, primary_key=True, nullable=False) 
     name = Column('name', String(20), nullable=False) 
     lastname = Column('lastname', String(20), nullable=False) 
-    code = Column('lastname', String(20), nullable=False)
+    code = Column('code', String(20), nullable=False)
 
     def __init__(self, id, name, lastname, code): 
         self.id = id
