@@ -221,6 +221,8 @@ def on_command_obtener_pacientes(message):
     bot.reply_to(message, text)
 
 ##################OBTENER MEDICOS################################
+
+
 @bot.message_handler(regexp=r"^(obtener|consultar) (m[eé]dicos?|doctor|doctores)$")
 def on_command_obtener_medicos(message):
     bot.send_chat_action(message.chat.id, 'typing')
@@ -228,20 +230,76 @@ def on_command_obtener_medicos(message):
     bot.reply_to(message, text)
 
 ##################OBTENER PACIENTES ASOCIADOS A UN MEDICO################################
+
+
 @bot.message_handler(regexp=r"^(obtener|consultar) (mis) (pacientes?)$")
 def on_command_obtener_pacientes_por_medico(message):
     global code_user_logged
     bot.send_chat_action(message.chat.id, 'typing')
 
     if(not code_user_logged):
-        bot.reply_to(message, "Debe identificarse para consultar pacientes")
+        bot.reply_to(
+            message, "Debe identificarse como médico para consultar pacientes")
     elif(str(code_user_logged)[0] == "2"):
         bot.reply_to(message, "Usted debe ser médico para consultar pacientes")
     else:
         text = logic.get_patients_by_doctor(code_user_logged)
         bot.reply_to(message, "Sus pacientes son: \n" + text)
 
+##################OBTENER REGISTROS ASOCIADOS A UN PACIENTE (BÚSQUEDA DE PACIENTE################################
+
+
+@bot.message_handler(regexp=r"^(obtener|consultar) (mis) (registros?)$")
+def on_command_obtener_registros_por_paciente(message):
+    global code_user_logged
+    bot.send_chat_action(message.chat.id, 'typing')
+
+    patient_logged = "Sus registros son: \n"
+
+    if(not code_user_logged):
+        bot.reply_to(message, "Debe identificarse para consultar registros")
+    elif(str(code_user_logged)[0] == "1"):
+        bot.reply_to(message, "Usted no tiene ningún registro")
+    else:
+        text = logic.get_records_by_patient(code_user_logged)
+        bot.reply_to(message, str(patient_logged) + str(text))
+
+
+##################OBTENER REGISTROS ASOCIADOS A UN PACIENTE (BÚSQUEDA DE DOCTOR)################################
+
+
+@bot.message_handler(regexp=r"^(obtener|consultar) (registro) ([0-9])+ (del) (paciente) ([0-9])+$")
+def on_command_obtener_registros_por_paciente_por_codigo(message):
+    global code_user_logged
+    bot.send_chat_action(message.chat.id, 'typing')
+    parts = re.match(
+        r"^(obtener|consultar) (registro) ([0-9])+ (del) (paciente) ([0-9])+$", message.text)
+
+    # Separar por espacios en blanco para obtener los valores
+    parts_split = parts[0].split()
+
+    record_id = parts_split[2]
+    patient_code = parts_split[5]
+
+    patient_logged = "Los registros del paciente son: \n"
+
+    if(not code_user_logged):
+        bot.reply_to(
+            message, "Debe identificarse como médico para consultar los registros de un paciente.")
+    elif(str(code_user_logged)[0] == "2"):
+        bot.reply_to(
+            message, "Usted no puede consultar los registros de un paciente")
+    else:
+        print("doctor code: "+ str(code_user_logged))
+        print("patient code: "+ str(patient_code))
+        print("record: "+ str(record_id))
+        text = logic.get_record_by_patient_code(
+            code_user_logged, patient_code, record_id)
+        bot.reply_to(message, str(patient_logged) + str(text))
+
 ##################CREAR MEDICOS################################
+
+
 @bot.message_handler(regexp=r"^(crear|agregar) (medico|doctor) ([A-Za-z])+ ([A-Za-z])+$")
 # @bot.message_handler(commands=["crear_medico"])
 def on_command_crear_medico(message):
@@ -277,6 +335,35 @@ def on_command_crear_paciente(message):
     text = logic.register_patient(name, lastname, code)
     bot.reply_to(message, text)
 
+##################CREAR REGISTRO MÉDICO################################
+
+
+@bot.message_handler(regexp=r"^(crear|agregar) (registro) (con) (sist[oó]lica) ([0-9])+ (diast[oó]lica) ([0-9])+ (frecuencia) ([0-9])+ (peso) ([0-9])+$")
+def on_command_crear_registro(message):
+    parts = re.match(
+        r"^(crear|agregar) (registro) (con) (sist[oó]lica) ([0-9])+ (diast[oó]lica) ([0-9])+ (frecuencia) ([0-9])+ (peso) ([0-9])+$", message.text)
+
+    # Separar por espacios en blanco para obtener los valores
+    parts_split = parts[0].split()
+
+    systolic = parts_split[4]
+    diastolic = parts_split[6]
+    frecuency = parts_split[8]
+    weight = parts_split[10]
+
+    global code_user_logged
+    bot.send_chat_action(message.chat.id, 'typing')
+
+    if(not code_user_logged):
+        bot.reply_to(
+            message, "Debe identificarse como paciente para crear registros médicos")
+    elif(str(code_user_logged)[0] == "1"):
+        bot.reply_to(message, "Usted debe ser paciente para crear registros")
+    else:
+        text = logic.register_record(float(systolic), float(
+            diastolic), float(frecuency), float(weight), code_user_logged)
+        bot.reply_to(message, text)
+
 ##################ELIMINAR MEDICOS################################
 
 
@@ -293,6 +380,50 @@ def on_command_borrar_pacientes(message):
     bot.send_chat_action(message.chat.id, 'typing')
     text = logic.delete_patients()
     bot.reply_to(message, text)
+
+##################ELIMINAR TODOS LOS REGISTROS DE UN PACIENTE################################
+
+
+@bot.message_handler(regexp=r"^(eliminar|borrar) (mis) (registros?)$")
+def on_command_borrar_registros_por_paciente(message):
+    global code_user_logged
+    bot.send_chat_action(message.chat.id, 'typing')
+
+    if(not code_user_logged):
+        bot.reply_to(
+            message, "Debe identificarse como paciente para eliminar sus registros médicos")
+    elif(str(code_user_logged)[0] == "1"):
+        bot.reply_to(
+            message, "Usted debe ser paciente para eliminar sus registros médicos")
+    else:
+        text = logic.delete_all_records_by_user(code_user_logged)
+        bot.reply_to(message, text)
+
+##################ELIMINAR 1 REGISTRO DE UN PACIENTE POR ID################################
+
+
+@bot.message_handler(regexp=r"^(eliminar|borrar) (registro) ([0-9])+$")
+def on_command_borrar_registro_por_paciente_por_id(message):
+    parts = re.match(
+        r"^(eliminar|borrar) (registro) ([0-9])+$", message.text)
+
+    # Separar por espacios en blanco para obtener los valores
+    parts_split = parts[0].split()
+
+    record_id = parts_split[2]
+
+    global code_user_logged
+    bot.send_chat_action(message.chat.id, 'typing')
+
+    if(not code_user_logged):
+        bot.reply_to(
+            message, "Debe identificarse como paciente para eliminar sus registros médicos")
+    elif(str(code_user_logged)[0] == "1"):
+        bot.reply_to(
+            message, "Usted debe ser paciente para eliminar sus registros médicos")
+    else:
+        text = logic.delete_record_by_id(record_id, code_user_logged)
+        bot.reply_to(message, text)
 
 #########################################################
 
