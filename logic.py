@@ -22,11 +22,20 @@ def get_help_message():
         "Estos son los comandos y órdenes disponibles:\n"
         "\n"
         "*/start* - Inicia la interacción con el bot (obligatorio)\n" "*/help* - Muestra este mensaje de ayuda\n"
-        "*/about* - Muestra detalles de esta aplicación\n" "*gane|gané|g {cantidad}* - Registra un saldo positivo\n" "*gaste|gasté|gg {cantidad}* - Registra un saldo negativo\n" "*listar ganancias|lg en {índice_mes} de {año}* - Lista las ganancias de un mes/año\n"
-        "*listar gastos|lgg en {mes} de {año}* - Lista los gastos de un mes - año"
-        "*obtener saldo|s* - Muestra el saldo actual (disponible)\n"
-        "*remover|r ganancia|g|gasto|gg {índice}* - Remueve una ganancia o un gasto según su índice\n"
-        "*listar cuentas|lc* - Lista las cuentas registradas (sólo admin)\n")
+        "*/about* - Muestra detalles de esta aplicación\n"
+        "*identificarse como|cómo {código}* - Se identifica el usuario como paciente o como médico\n"
+        "*obtener|consultar pacientes* - Retorna lista de pacientes creados\n"
+        "*obtener|consultar médicos|doctores* - Retorna lista de médicos creados\n"
+        "*obtener|consultar mis pacientes* - Retorna lista de pacientes asociados a un médico \n"
+        "*obtener|consultar mis registros* - Retorna lista de registros asociados a un paciente \n"
+        "*obtener|consultar registro {id_registro} del paciente {codigo_paciente}* - Utilizado para consultar los registros de un paciente asociado a un doctor \n"
+        "*crear|agregar medico|doctor {nombre} {apellido}* - Utilizado para crear médicos\n"
+        "*crear|agregar paciente {nombre} {apellido}* - Utilizado para crear pacientes\n"
+        "*crear|agregar registro con sistólica {sistolica} diastolica {diastolica} frecuencia {frecuencia} peso {peso} * - Utilizado para crear un registro asociado al paciente identificado\n"
+        "*borrar|eliminar medicos|doctores* - Utilizado para eliminar todos los medicos creados\n"
+        "*borrar|eliminar pacientes* - Utilizado para eliminar todos los pacientes creados\n"
+        "*borrar|eliminar mis registros* - Utilizado para eliminar todos los registros del paciente identificado\n"
+        "*borrar|eliminar registro {id_registro}* - Utilizado para eliminar un registro del paciente identificado\n")
     return response
 
 ####### START #######
@@ -34,8 +43,7 @@ def get_help_message():
 
 def get_welcome_message(bot_data):
     response = (
-        f"Hola, soy *{bot_data.first_name}* "
-        f"también conocido como el care chiris:*{bot_data.username}*.\n\n" "¡Estoy aquí para ayudarte a ganar la materia!")
+        f"Hola, soy *{bot_data.first_name}* ")
     return response
 
 #####################################################################################
@@ -167,19 +175,19 @@ def register_record(systolic, diastolic, frecuency, weight, patients_code):
     category = ""
 
     if (float(systolic) < 120 and float(diastolic) < 80):
-        category = "Óptima"
+        category = category + "Óptima"
     elif ((float(systolic) >= 120 and float(systolic) <= 129) and (float(diastolic) >= 80 and float(diastolic) <= 84)):
-        category = "Normal"
+        category = category + "Normal"
     elif ((float(systolic) >= 130 and float(systolic) <= 139) and (float(diastolic) >= 85 and float(diastolic) <= 89)):
-        category = "Normal alta"
+        category = category + "Normal alta"
     elif ((float(systolic) >= 140 and float(systolic) <= 159) and (float(diastolic) >= 90 and float(diastolic) <= 99)):
-        category = "Hipertensión grado 1"
+        category = category + "Hipertensión grado 1"
     elif ((float(systolic) >= 160 and float(systolic) <= 179) and (float(diastolic) >= 100 and float(diastolic) <= 109)):
-        category = "Hipertensión grado 2"
+        category = category + "Hipertensión grado 2"
     elif (float(systolic) > 180 and float(diastolic) > 110):
-        category = "Hipertensión grado 3"
+        category = category + "Hipertensión grado 3"
     elif (float(systolic) > 140 and float(diastolic) < 90):
-        category = "Hipertensión sistólica aislada"
+        category = category + "Hipertensión sistólica aislada"
 
     record = Record(id_record, systolic, diastolic, frecuency, weight,
                     datetime.now(), category, "Sin observaciones", patients_id)
@@ -358,6 +366,61 @@ def get_record_by_patient_code(doctor_code, patient_code, record_id):
     return str(recordSearch.id) + "- Registro #" + str(recordSearch.id) + "\n" + "Sistólica: " + str(recordSearch.systolic) + "\n" + "Diastólica: " + str(recordSearch.diastolic) + "\n" + "Frecuencia: " + str(recordSearch.frecuency) + \
                         "\n" + "Peso: " + str(recordSearch.weight) + "\n" + "Fecha: " + str(recordSearch.date) + "\n" + "Categoría: " + str(
                             recordSearch.category) + "\n" + "Observaciones del doctor: " + str(recordSearch.message) + "\n\n"
+
+
+##### AGREGAR COMENTARIO AL REGISTRO DE UN PACIENTE #####
+def add_comment_to_record(doctor_code, patient_code, record_id, comment):
+    records = db.session.query(Record).all()
+    patients = db.session.query(Patient).all()
+    patient_search = get_patient_by_code(patient_code)
+    doctor_logged = get_doctor_by_code(doctor_code)
+
+    if (len(patients) == 0):
+        return "No hay pacientes creados"
+
+    if (len(records) == 0):
+        return "No hay registros creados."
+    
+    if (not patient_search):
+        return "El paciente no existe"
+
+    #VALIDAR SI EL DOCTOR TIENE POR LO MENOS 1 PACIENTE ASOCIADO PARA BUSCAR SU REGISTRO
+    hasPatient = False
+
+    for patient in patients:
+        if (str(patient.doctors_id) == str(doctor_logged.id)):
+            hasPatient = True
+
+    if (not hasPatient):
+        return "Usted no tiene ningún paciente asociado"
+
+    cont = 0
+    existRecord = False
+    available_records = ""
+
+    for record in records:
+        # VALIDAR SI EL PACIENTE TIENE POR LO MENOS 1 REGISTRO ASOCIADO
+        if(str(record.patients_id) == str(patient_search.id)):
+            available_records += str(record.id) + "- Registro #" + str(record.id) + " , con fecha " + str(record.date) + "\n"
+            cont += 1
+
+        #VALIDAR QUE EL REGISTRO QUE SE ESTÁ BUSCANDO SI EXISTA
+        if(str(record.id) == str(record_id)):
+            existRecord = True
+
+        #SI ENCUENTRA EL REGISTRO, ALMACENARLO EN VARIABLE PARA RETORNARLO
+        if(str(record.id) == str(record_id)):
+            record.message = str(comment)
+            db.session.commit()
+
+    if(cont == 0):
+        return "El paciente " + str(patient_search.name) + " " + str(patient_search.lastname) + " no tiene ningún registro asociado."
+
+    if (not existRecord):
+        return "El registro no existe, los registros disponibles son: \n" + available_records
+
+
+    return "La observación se ha guardado exitosamente."
 
 ##### OBTENER DOCTOR POR ID #####
 
