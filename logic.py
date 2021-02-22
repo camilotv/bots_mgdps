@@ -175,19 +175,19 @@ def register_record(systolic, diastolic, frecuency, weight, patients_code):
     category = ""
 
     if (float(systolic) < 120 and float(diastolic) < 80):
-        category = category + "Óptima"
+        category = "Óptima"
     elif ((float(systolic) >= 120 and float(systolic) <= 129) and (float(diastolic) >= 80 and float(diastolic) <= 84)):
-        category = category + "Normal"
+        category = "Normal"
     elif ((float(systolic) >= 130 and float(systolic) <= 139) and (float(diastolic) >= 85 and float(diastolic) <= 89)):
-        category = category + "Normal alta"
+        category = "Normal alta"
     elif ((float(systolic) >= 140 and float(systolic) <= 159) and (float(diastolic) >= 90 and float(diastolic) <= 99)):
-        category = category + "Hipertensión grado 1"
+        category = "Hipertensión grado 1"
     elif ((float(systolic) >= 160 and float(systolic) <= 179) and (float(diastolic) >= 100 and float(diastolic) <= 109)):
-        category = category + "Hipertensión grado 2"
+        category = "Hipertensión grado 2"
     elif (float(systolic) > 180 and float(diastolic) > 110):
-        category = category + "Hipertensión grado 3"
+        category = "Hipertensión grado 3"
     elif (float(systolic) > 140 and float(diastolic) < 90):
-        category = category + "Hipertensión sistólica aislada"
+        category = "Hipertensión sistólica aislada"
 
     record = Record(id_record, systolic, diastolic, frecuency, weight,
                     datetime.now(), category, "Sin observaciones", patients_id)

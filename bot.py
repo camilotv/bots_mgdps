@@ -105,11 +105,14 @@ def on_command_obtener_pacientes_por_medico(message):
     global code_user_logged
     bot.send_chat_action(message.chat.id, 'typing')
 
+    text = ""
     if(not code_user_logged):
+        text = "Debe identificarse como médico para consultar pacientes"
         bot.reply_to(
-            message, "Debe identificarse como médico para consultar pacientes")
+            message, text)
     elif(str(code_user_logged)[0] == "2"):
-        bot.reply_to(message, "Usted debe ser médico para consultar pacientes")
+        text = "Usted debe ser médico para consultar pacientes"
+        bot.reply_to(message, text)
     else:
         text = logic.get_patients_by_doctor(code_user_logged)
         bot.reply_to(message, "Sus pacientes son: \n" + text)
