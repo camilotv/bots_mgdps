@@ -161,9 +161,9 @@ def on_command_agregar_comentario(message):
         bot.reply_to(
             message, "Usted no puede consultar los registros de un paciente")
     else:
-        print("doctor code: "+ str(code_user_logged))
-        print("patient code: "+ str(patient_code))
-        print("record: "+ str(record_id))
+        print("doctor code: " + str(code_user_logged))
+        print("patient code: " + str(patient_code))
+        print("record: " + str(record_id))
         text = logic.get_record_by_patient_code(
             code_user_logged, patient_code, record_id)
         bot.reply_to(message, str(patient_logged) + str(text))
@@ -194,9 +194,9 @@ def on_command_obtener_registros_por_paciente_por_codigo(message):
         bot.reply_to(
             message, "Usted no puede consultar los registros de un paciente")
     else:
-        print("doctor code: "+ str(code_user_logged))
-        print("patient code: "+ str(patient_code))
-        print("record: "+ str(record_id))
+        print("doctor code: " + str(code_user_logged))
+        print("patient code: " + str(patient_code))
+        print("record: " + str(record_id))
         text = logic.get_record_by_patient_code(
             code_user_logged, patient_code, record_id)
         bot.reply_to(message, str(patient_logged) + str(text))
@@ -250,10 +250,10 @@ def on_command_crear_registro(message):
     # Separar por espacios en blanco para obtener los valores
     parts_split = parts[0].split()
 
-    systolic = parts_split[4]
-    diastolic = parts_split[6]
-    frecuency = parts_split[8]
-    weight = parts_split[10]
+    systolic = float(parts_split[4])
+    diastolic = float(parts_split[6])
+    frecuency = float(parts_split[8])
+    weight = float(parts_split[10])
 
     global code_user_logged
     bot.send_chat_action(message.chat.id, 'typing')
@@ -264,8 +264,8 @@ def on_command_crear_registro(message):
     elif(str(code_user_logged)[0] == "1"):
         bot.reply_to(message, "Usted debe ser paciente para crear registros")
     else:
-        text = logic.register_record(float(systolic), float(
-            diastolic), float(frecuency), float(weight), code_user_logged)
+        text = logic.register_record(
+            systolic, diastolic, frecuency, weight, code_user_logged)
         bot.reply_to(message, text)
 
 ##################ELIMINAR MEDICOS################################
