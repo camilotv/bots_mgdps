@@ -34,7 +34,8 @@ def get_help_message():
         "*borrar|eliminar medicos|doctores* - Utilizado para eliminar todos los medicos creados\n"
         "*borrar|eliminar pacientes* - Utilizado para eliminar todos los pacientes creados\n"
         "*borrar|eliminar mis registros* - Utilizado para eliminar todos los registros del paciente identificado\n"
-        "*borrar|eliminar registro {id_registro}* - Utilizado para eliminar un registro del paciente identificado\n")
+        "*borrar|eliminar registro {id_registro}* - Utilizado para eliminar un registro del paciente identificado\n"
+        "*agregar|añadir observación|comentario al registro {id_registro} del paciente {código_paciente} : {comentario}* - Utilizado para agregar un comentario al registro de un paciente\n")
     return response
 
 ####### START #######

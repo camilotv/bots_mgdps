@@ -139,15 +139,20 @@ def on_command_obtener_registros_por_paciente(message):
 ##################AGREGAR UN COMENTARIO A UN REGISTRO DE UN PACIENTE################################
 
 
-@bot.message_handler(regexp=r"^(agregar|añadir) (observaci[oó]n|comentario) (al) (registro) ([0-9])+ (del) (paciente) ([0-9])+$")
+@bot.message_handler(regexp=r"^(agregar|añadir) (observaci[oó]n|comentario) (al) (registro) ([0-9])+ (del) (paciente) ([0-9])+ : .+$")
 def on_command_agregar_comentario(message):
     global code_user_logged
     bot.send_chat_action(message.chat.id, 'typing')
     parts = re.match(
-        r"^(agregar|añadir) (observaci[oó]n|comentario) (al) (registro) ([0-9])+ (del) (paciente) ([0-9])+$", message.text)
+        r"^(agregar|añadir) (observaci[oó]n|comentario) (al) (registro) ([0-9])+ (del) (paciente) ([0-9])+ : .+$", message.text)
 
     # Separar por espacios en blanco para obtener los valores
     parts_split = parts[0].split()
+
+    #Obtener mensaje para agregar al registro
+    parts_message = parts[0].split(":")
+
+    comment = str(parts_message[1])
 
     record_id = parts_split[4]
     patient_code = parts_split[7]
@@ -164,7 +169,7 @@ def on_command_agregar_comentario(message):
         print("record: " + str(record_id))
 
         text = logic.add_comment_to_record(
-            code_user_logged, patient_code, record_id, "Esto es una prueba")
+            code_user_logged, patient_code, record_id, comment)
         bot.reply_to(message, str(text))
 
 
