@@ -139,34 +139,33 @@ def on_command_obtener_registros_por_paciente(message):
 ##################AGREGAR UN COMENTARIO A UN REGISTRO DE UN PACIENTE################################
 
 
-@bot.message_handler(regexp=r"^(agregar|añadir) (observaci[oó]n|comentario) ([0-9])+ (del) (paciente) ([0-9])+$")
+@bot.message_handler(regexp=r"^(agregar|añadir) (observaci[oó]n|comentario) (al) (registro) ([0-9])+ (del) (paciente) ([0-9])+$")
 def on_command_agregar_comentario(message):
     global code_user_logged
     bot.send_chat_action(message.chat.id, 'typing')
     parts = re.match(
-        r"^(obtener|consultar) (registro) ([0-9])+ (del) (paciente) ([0-9])+$", message.text)
+        r"^(agregar|añadir) (observaci[oó]n|comentario) (al) (registro) ([0-9])+ (del) (paciente) ([0-9])+$", message.text)
 
     # Separar por espacios en blanco para obtener los valores
     parts_split = parts[0].split()
 
-    record_id = parts_split[2]
-    patient_code = parts_split[5]
-
-    patient_logged = "Los registros del paciente son: \n"
+    record_id = parts_split[4]
+    patient_code = parts_split[7]
 
     if(not code_user_logged):
         bot.reply_to(
-            message, "Debe identificarse como médico para consultar los registros de un paciente.")
+            message, "Debe identificarse como médico para agregar un comentario a los registros de un paciente.")
     elif(str(code_user_logged)[0] == "2"):
         bot.reply_to(
-            message, "Usted no puede consultar los registros de un paciente")
+            message, "Usted no puede agregar comentarios a los registros de un paciente")
     else:
         print("doctor code: " + str(code_user_logged))
         print("patient code: " + str(patient_code))
         print("record: " + str(record_id))
-        text = logic.get_record_by_patient_code(
-            code_user_logged, patient_code, record_id)
-        bot.reply_to(message, str(patient_logged) + str(text))
+
+        text = logic.add_comment_to_record(
+            code_user_logged, patient_code, record_id, "Esto es una prueba")
+        bot.reply_to(message, str(text))
 
 
 ##################OBTENER REGISTROS ASOCIADOS A UN PACIENTE (BÚSQUEDA DE DOCTOR)################################
@@ -204,7 +203,7 @@ def on_command_obtener_registros_por_paciente_por_codigo(message):
 ##################CREAR MEDICOS################################
 
 
-@bot.message_handler(regexp=r"^(crear|agregar) (medico|doctor) ([A-Za-z])+ ([A-Za-z])+$")
+@bot.message_handler(regexp=r"^(crear|agregar) (m[ée]dico|doctor) ([A-Za-z])+ ([A-Za-z])+$")
 # @bot.message_handler(commands=["crear_medico"])
 def on_command_crear_medico(message):
     parts = re.match(
@@ -271,7 +270,7 @@ def on_command_crear_registro(message):
 ##################ELIMINAR MEDICOS################################
 
 
-@bot.message_handler(regexp=r"^(eliminar|borrar) (medicos|doctores)$")
+@bot.message_handler(regexp=r"^(eliminar|borrar) (m[ée]dicos|doctores)$")
 def on_command_borrar_medicos(message):
     bot.send_chat_action(message.chat.id, 'typing')
     text = logic.delete_doctors()
