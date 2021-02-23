@@ -63,7 +63,7 @@ def on_command_identificarse(message):
 
         if (not patient):
             bot.reply_to(message, "El paciente con código " +
-                         str(code) + " no existe-")
+                         str(code) + " no existe")
         else:
             bot.reply_to(message, "Bienvenido(a) paciente " +
                          str(patient.name) + " " + str(patient.lastname))
@@ -94,7 +94,7 @@ def on_command_obtener_pacientes(message):
 @bot.message_handler(regexp=r"^(obtener|consultar) (m[eé]dicos?|doctor|doctores)$")
 def on_command_obtener_medicos(message):
     bot.send_chat_action(message.chat.id, 'typing')
-    text = logic.get_all_doctors(message.from_user.id)
+    text = logic.get_all_doctors()
     bot.reply_to(message, text)
 
 ##################OBTENER PACIENTES ASOCIADOS A UN MEDICO################################

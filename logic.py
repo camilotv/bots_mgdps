@@ -5,7 +5,6 @@ from models.Record import Record
 from datetime import datetime
 from sqlalchemy import extract
 
-
 def get_about_this(VERSION):
     response = (
         f"Desarrollo Inicial del Bot: {VERSION}"
@@ -51,7 +50,7 @@ def get_welcome_message(bot_data):
 ##### OBTENER TODOS LOS MÉDICOS #####
 
 
-def get_all_doctors(user_id):
+def get_all_doctors():
     doctors = db.session.query(Doctor).all()
 
     temp = ""
